@@ -7,20 +7,27 @@ public class Player : MonoBehaviour
 {
     //Variable to store player speed
     public float maxSpeed;
+    
     //Variable to store player current health
     public int playerHealth;
+    
     //Variable to store player age
     public int playerAge;
+    
     //Variable to store player name
     public string playerName;
+   
     //Variable to store player score
     public int playerScore;
+   
     //Variable for the amount of keys collected
     private bool hasAllKeys = false;
+    
     //Variable for how much ammo is left in clip
     public int ammoLeft;
+    
     //Variable for current speed of the player
-    private double speed;
+    private float speed;
 
     // Start is called before the first frame update
     void Start()
@@ -58,7 +65,12 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Move player right at 5 meters per second
-        transform.Translate(Vector3.right * maxSpeed * Time.deltaTime);
+        // Variables for player input.
+        float horizontalIn = Input.GetAxis("Horizontal");
+        float verticalIn = Input.GetAxis("Vertical");
+
+        // Mayer movement
+        transform.Translate(Vector3.right * horizontalIn * maxSpeed * Time.deltaTime);
+        transform.Translate(Vector3.up * verticalIn * maxSpeed * Time.deltaTime);
     }
 }
