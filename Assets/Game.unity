@@ -328,11 +328,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 7
-  playerHealth: 100
-  playerAge: 25
-  playerName: Zach
-  playerScore: 0
-  ammoLeft: 0
+  xBounds: 11
+  yBoundsPos: 0.5
+  yBoundsNeg: -3.5
+  player: {fileID: 168608771}
 --- !u!1 &299729364
 GameObject:
   m_ObjectHideFlags: 0

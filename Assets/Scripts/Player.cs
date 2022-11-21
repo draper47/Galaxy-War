@@ -1,76 +1,46 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    //Variable to store player speed
     public float maxSpeed;
+    public float xBounds;
+    public float yBoundsPos;
+    public float yBoundsNeg;
+    public GameObject player;
     
-    //Variable to store player current health
-    public int playerHealth;
-    
-    //Variable to store player age
-    public int playerAge;
-    
-    //Variable to store player name
-    public string playerName;
-   
-    //Variable to store player score
-    public int playerScore;
-   
-    //Variable for the amount of keys collected
-    private bool hasAllKeys = false;
-    
-    //Variable for how much ammo is left in clip
-    public int ammoLeft;
-    
-    //Variable for current speed of the player
-    private float speed;
-
     // Start is called before the first frame update
     void Start()
     {
         // Take the current position = new position (0, 0, 0) 
         transform.position = new Vector3(0, 0, 0);
-
-        //Print player name
-        Debug.Log("Players name is " + playerName);
-
-        //Print players health
-        Debug.Log("Current health is " + playerHealth);
-
-        //Print players age
-        Debug.Log("Players age is " + playerAge);
-
-        //Print players maximum speed
-        Debug.Log("The max speed is set to " + maxSpeed);
-
-        //Print players score
-        Debug.Log("Your score is " + playerScore);
-
-        //Print how many keys the player has collected
-        Debug.Log("All keys collected is " + hasAllKeys);
-
-        //Print how much ammo is left.
-        Debug.Log("You have " + ammoLeft + " left in your clip.");
-
-        //Print the current speed of the payer
-        Debug.Log("Your speed is " + speed);
-         
-
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Variables for player input.
+        calcMovement();
+    }
+    void calcMovement()
+    {
         float horizontalIn = Input.GetAxis("Horizontal");
         float verticalIn = Input.GetAxis("Vertical");
 
-        // Mayer movement
-        transform.Translate(Vector3.right * horizontalIn * maxSpeed * Time.deltaTime);
         transform.Translate(Vector3.up * verticalIn * maxSpeed * Time.deltaTime);
+        transform.Translate(Vector3.right * horizontalIn * maxSpeed * Time.deltaTime);
+
+        if (transform.position.x > xBounds)
+        {
+            transform.position = new Vector3((-1 * xBounds), transform.position.y, transform.position.z);
+        }
+        else if (transform.position.x < (xBounds * -1))
+        {
+            transform.position = new Vector3(xBounds - .5f, transform.position.y, transform.position.z);
+        }
+
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, yBoundsNeg, yBoundsPos), transform.position.z);
     }
 }
