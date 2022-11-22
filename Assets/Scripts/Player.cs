@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
     public float yBoundsPos;
     public float yBoundsNeg;
     public GameObject player;
+    public GameObject laserPrefab;
+
+    private float laserSpeed;
     
     // Start is called before the first frame update
     void Start()
@@ -23,6 +26,16 @@ public class Player : MonoBehaviour
     void Update()
     {
         calcMovement();
+        fireLaser();
+    }
+    
+    void fireLaser()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            print("space key pressed");
+            Instantiate(laserPrefab, transform.position, Quaternion.identity);
+        }
     }
     void calcMovement()
     {
