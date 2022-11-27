@@ -11,9 +11,18 @@ public class Player : MonoBehaviour
     public float yBoundsPos;
     public float yBoundsNeg;
     public GameObject player;
-    public GameObject laserPrefab;
+    
+    [SerializeField]
+    private Vector3 laserOffset;
+    
+    [SerializeField] 
+    private GameObject _laserPrefab;
 
-    private float laserSpeed;
+    [SerializeField]
+    private float _fireRate = 0.5f; 
+    
+    private float _nextFire = 0.0f;
+
     
     // Start is called before the first frame update
     void Start()
@@ -28,15 +37,17 @@ public class Player : MonoBehaviour
         calcMovement();
         fireLaser();
     }
-    
+
+
     void fireLaser()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) && Time.time >= _nextFire)
         {
-            print("space key pressed");
-            Instantiate(laserPrefab, transform.position, Quaternion.identity);
+            Instantiate(_laserPrefab, transform.position + laserOffset, Quaternion.identity);
+            _nextFire = Time.time + _fireRate;
         }
     }
+
     void calcMovement()
     {
         float horizontalIn = Input.GetAxis("Horizontal");
@@ -56,4 +67,5 @@ public class Player : MonoBehaviour
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, yBoundsNeg, yBoundsPos), transform.position.z);
     }
+
 }

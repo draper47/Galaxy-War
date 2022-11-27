@@ -238,7 +238,9 @@ MonoBehaviour:
   yBoundsPos: 0.5
   yBoundsNeg: -3.5
   player: {fileID: 168608771}
-  laserPrefab: {fileID: 6473992879407573937, guid: 0d14572e8c117714fa67a7d3dc80ca91, type: 3}
+  laserOffset: {x: 0, y: 1, z: 0}
+  _laserPrefab: {fileID: 6473992879407573937, guid: 0d14572e8c117714fa67a7d3dc80ca91, type: 3}
+  _fireRate: 0.25
 --- !u!1 &299729364
 GameObject:
   m_ObjectHideFlags: 0
