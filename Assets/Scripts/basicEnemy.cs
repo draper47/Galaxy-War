@@ -16,8 +16,7 @@ public class basicEnemy : MonoBehaviour
         hitBottomScreen();
     }
 
-    [SerializeField]
-    private float _speed = 1;
+    [SerializeField] private float _speed = 1;
 
 
 
@@ -26,26 +25,46 @@ public class basicEnemy : MonoBehaviour
         transform.Translate(Vector3.down * Time.deltaTime * _speed);
 
     }
-    
-    [SerializeField]
-    private float _yBounds = 8;
-
-    [SerializeField]
-    private float _xBounds = 10;
-
-    [SerializeField]
-    private GameObject _enemy;
 
 
     void hitBottomScreen()
     {
         // If the y position value hits the bottom of the screen
-        // Respawn to the top of screen with a random horizontal position
+        // destory itself
 
-        if(transform.position.y < _yBounds * -1)
+        if(transform.position.y < -6)
         {
-            Instantiate(_enemy, new Vector3(UnityEngine.Random.Range(-1 * _xBounds, _xBounds), _yBounds, 0), Quaternion.identity);
             Destroy(this.gameObject);
         }
     }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        print("Hit: " + other.transform.name);
+    // If other is player
+    // Hurt Player
+    // Destroy self
+
+        if(other.tag == "Player")
+        {
+            Player.health -= 10;
+            print("Health is " + Player.health);
+            Destroy(this.gameObject);
+        }
+    // If other is laser
+    // destory laser
+    // Destroy self
+
+        if(other.tag == "Projectile")
+        {
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+        }
+    }
+
+
+
+
+
+
 }
