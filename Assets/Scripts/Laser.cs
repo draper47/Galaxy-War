@@ -5,6 +5,8 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
 
+    [SerializeField] private float _speed;
+    [SerializeField] private float _edgeOfScreenY;
 
     // Start is called before the first frame update
     void Start()
@@ -19,20 +21,10 @@ public class Laser : MonoBehaviour
         offScreen();
     }
 
-    //Laser movement
-
-    [SerializeField]
-    private float _speed;
-
     void laserMovement()
     {
         transform.Translate(Vector3.up * Time.deltaTime * _speed);
     }
-
-    // Destroy the laser when it is off the screen
-    
-    [SerializeField]
-    private float _edgeOfScreenY;
 
     void offScreen()
     {

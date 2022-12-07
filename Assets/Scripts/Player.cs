@@ -8,16 +8,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float maxSpeed;
-    [SerializeField] private float acceleration = 1f;
-
+    [SerializeField] private float _speed = 1;
     [SerializeField] private float _xBounds;
     [SerializeField] private float _yBounds;
     [SerializeField] private float _yCenter;
 
-    public GameObject player;
-    public static int health;
-    public int maxHealth = 100;
+    [SerializeField] private GameObject player;
+
+    private int _lives;
+    [SerializeField] private int _maxLives = 3;
     private float _nextFire = 0.0f;
     
 
@@ -32,7 +31,7 @@ public class Player : MonoBehaviour
     {
         // Take the current position = new position (0, 0, 0) 
         transform.position = new Vector3(0, 0, 0);
-        health = maxHealth;
+        _lives = _maxLives;
     }
 
     // Update is called once per frame
@@ -41,7 +40,6 @@ public class Player : MonoBehaviour
         calcMovement();
         fireLaser();
     }
-
 
     void fireLaser()
     {
@@ -57,8 +55,8 @@ public class Player : MonoBehaviour
         float horizontalIn = Input.GetAxis("Horizontal");
         float verticalIn = Input.GetAxis("Vertical");
 
-        transform.Translate(Vector3.up * (verticalIn * acceleration) * maxSpeed * Time.deltaTime);
-        transform.Translate(Vector3.right * (horizontalIn * acceleration) * maxSpeed * Time.deltaTime);
+        transform.Translate(Vector3.up * verticalIn * _speed * Time.deltaTime);
+        transform.Translate(Vector3.right * horizontalIn * _speed * Time.deltaTime);
 
         if (transform.position.x > _xBounds)
         {
@@ -72,4 +70,14 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, _yBounds * -1, _yCenter), transform.position.z);
     }
 
+    public void Damage()
+    {
+        _lives -= 1;
+        print("Lives left: " + _lives);
+
+        if (_lives <= 0) 
+        {
+            Destroy(this.gameObject);
+        }
+    }
 }
