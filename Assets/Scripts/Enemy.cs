@@ -5,19 +5,15 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private int _speed = 5;
-    //[SerializeField] private float _leftEdge = -10f;
-    //[SerializeField] private float _rightEdge = 10f;
     [SerializeField] private float _bottom = -5.5f;
-    //[SerializeField] private float _top = 10f;
-    //[SerializeField] private float _fromPlayer = 5f;
 
-    // Start is called before the first frame update
+    [SerializeField] private GameObject _player;
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         Movement();
@@ -38,12 +34,13 @@ public class Enemy : MonoBehaviour
     }
 
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter2D(Collider2D other)
     {
         print("Collided with " + other);
 
         Player player = other.transform.GetComponent<Player>();
-
+        
+        // Collided with player 
         if (other.tag == "Player")
         {
             if (player != null)
@@ -57,6 +54,7 @@ public class Enemy : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        // Collided with projectile
         if (other.tag == "Projectile")
         {
             Destroy(other.gameObject);

@@ -19,22 +19,24 @@ public class Player : MonoBehaviour
     [SerializeField] private int _maxLives = 3;
     private float _nextFire = 0.0f;
     
-
     [SerializeField] private Vector3 laserOffset;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private float _fireRate = 0.5f;
-    
 
+    [SerializeField] private Spawner _spawnerScript;
 
-    // Start is called before the first frame update
     void Start()
     {
-        // Take the current position = new position (0, 0, 0) 
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
+        _spawnerScript = GameObject.Find("Spawner").GetComponent<Spawner>();
+
+        if (_spawnerScript == null)
+        {
+            print("Spawner script is null. Cannot find the Spawner scipt.");
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         calcMovement();
@@ -76,7 +78,8 @@ public class Player : MonoBehaviour
         print("Lives left: " + _lives);
 
         if (_lives <= 0) 
-        {
+        {   
+            _spawnerScript.onPlayerDeath();
             Destroy(this.gameObject);
         }
     }

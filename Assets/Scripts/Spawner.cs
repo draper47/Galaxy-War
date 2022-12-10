@@ -1,37 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Principal;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private float _spawnInterval = 5f;
+    [SerializeField] private float _spawnIntervalMax = 5f;
+    [SerializeField] private float _spawnIntervalMin= .1f;
+
     [SerializeField] private float _spawnPointY;
     [SerializeField] private GameObject _enemy;
     [SerializeField] private GameObject _player;
-    
-    private float _nextSpawn = 2f;
+    [SerializeField] private float _spawnOffset;
+    [SerializeField] private GameObject _enemyContainer;
 
-    // Start is called before the first frame update
+    private bool isPlayerDead;
     void Start()
     {
-
+       StartCoroutine(SpawnEnemiesRoutine());
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-        spawnEnemies();
+        
     }
 
-    
-    void spawnEnemies()
+    IEnumerator SpawnEnemiesRoutine()
     {
-        if (Time.time >= _nextSpawn && _player != null)
+        var playerScript = _player.GetComponent<Player>();
+        
+        while(isPlayerDead == false)
         {
-            print("Enemy Spawned");
-            float randomX = UnityEngine.Random.Range(_player.transform.position.x - 5f, _player.transform.position.x + 5f);
-            Instantiate(_enemy, new Vector3(Mathf.Clamp(randomX, -9f, 9), _spawnPointY, 0f), Quaternion.identity);
-            _nextSpawn = Time.time + _spawnInterval;
+            float spawnInterval = Random.Range(_spawnIntervalMin, _spawnIntervalMax);
+            var playerPosition = _player.transform.position;
+            float randomX = Random.Range(playerPosition.x - _spawnOffset, playerPosition.x + _spawnOffset);
+            Vector3 randomSpawnPoint = new Vector3(Mathf.Clamp(randomX, -9f, 9f), _spawnPointY, 0f);
+            GameObject newEnemy = Instantiate(_enemy, randomSpawnPoint, Quaternion.identity);
+            newEnemy.transform.SetParent(_enemyContainer.transform);
+            yield return new WaitForSeconds(spawnInterval);
         }
+    }
+
+    public void onPlayerDeath()
+    {
+        isPlayerDead = true;
     }
 }
