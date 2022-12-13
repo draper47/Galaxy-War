@@ -13,18 +13,20 @@ public class Player : MonoBehaviour
     [SerializeField] private float _yBounds;
     [SerializeField] private float _yCenter;
 
-    [SerializeField] private GameObject player;
-
     private int _lives;
     [SerializeField] private int _maxLives = 3;
-    private float _nextFire = 0.0f;
-    
-    [SerializeField] private Vector3 laserOffset;
-    [SerializeField] private GameObject _laserPrefab;
+
     [SerializeField] private float _fireRate = 0.5f;
-
+    [SerializeField] private Vector3 _laserOffset;
     [SerializeField] private Spawner _spawnerScript;
-
+    
+    [SerializeField] private GameObject _singleShotPrefab;
+    [SerializeField] private GameObject _trippleShotPrefab;
+    
+    private float _nextFire = 0.0f;    
+    [SerializeField] private bool _isTrippleShot;
+    
+    [SerializeField] private GameObject _player;
     void Start()
     {
         transform.position = new Vector3(0, 0, 0);
@@ -39,20 +41,45 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        calcMovement();
-        fireLaser();
-    }
-
-    void fireLaser()
-    {
+        CalcMovement();        
+        
         if (Input.GetKey(KeyCode.Space) && Time.time >= _nextFire)
         {
-            Instantiate(_laserPrefab, transform.position + laserOffset, Quaternion.identity);
+            FireProjectile();
             _nextFire = Time.time + _fireRate;
         }
     }
 
-    void calcMovement()
+    void FireProjectile()
+    {
+        if(_isTrippleShot == true)
+        {
+            TrippleShot();
+        }
+        else
+        {
+            SingleShot();
+        }
+    }
+
+    private void SingleShot()
+    {
+        Instantiate(_singleShotPrefab, transform.position + _laserOffset, Quaternion.identity);
+    }
+
+    private void TrippleShot()
+    {
+        Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
+    }
+
+    public IEnumerator ActivateTrippleShot()
+    {
+        _isTrippleShot = true;
+        yield return new WaitForSeconds(5f);
+        _isTrippleShot = false;
+    }
+
+    void CalcMovement()
     {
         float horizontalIn = Input.GetAxis("Horizontal");
         float verticalIn = Input.GetAxis("Vertical");
@@ -62,11 +89,11 @@ public class Player : MonoBehaviour
 
         if (transform.position.x > _xBounds)
         {
-            transform.position = new Vector3((-1 * _xBounds), transform.position.y, transform.position.z);
+            transform.position = new Vector3((-_xBounds), transform.position.y, transform.position.z);
         }
         else if (transform.position.x < (_xBounds * -1))
         {
-            transform.position = new Vector3(_xBounds - .5f, transform.position.y, transform.position.z);
+            transform.position = new Vector3(_xBounds, transform.position.y, transform.position.z);
         }
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, _yBounds * -1, _yCenter), transform.position.z);
@@ -75,7 +102,7 @@ public class Player : MonoBehaviour
     public void Damage()
     {
         _lives -= 1;
-        print("Lives left: " + _lives);
+        Debug.Log("Lives left: " + _lives);
 
         if (_lives <= 0) 
         {   

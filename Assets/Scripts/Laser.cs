@@ -6,30 +6,28 @@ public class Laser : MonoBehaviour
 {
 
     [SerializeField] private float _speed;
-    [SerializeField] private float _edgeOfScreenY;
+    [SerializeField] private float _topScreen = 8;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        laserMovement();
-        offScreen();
+        LaserMovement();
+        OffScreen();
     }
 
-    void laserMovement()
+    void LaserMovement()
     {
         transform.Translate(Vector3.up * Time.deltaTime * _speed);
     }
 
-    void offScreen()
+    void OffScreen()
     {
-        if (transform.position.y > _edgeOfScreenY)
+        if (transform.position.y > _topScreen)
         {
+            if(transform.parent != null)
+            {
+                Destroy(transform.parent.gameObject);
+            }
+
             Destroy(this.gameObject);
             print("Destroyed laser.");
         }

@@ -9,11 +9,6 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private GameObject _player;
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         Movement();

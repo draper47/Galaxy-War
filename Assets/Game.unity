@@ -207,6 +207,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &404844540
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 404844541}
+  m_Layer: 0
+  m_Name: PowerupContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &404844541
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404844540}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 895571967}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &828158065
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,13 +361,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd10d386a77065942a3b9d8a5c7cad25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnIntervalMax: 5
-  _spawnIntervalMin: 2
-  _spawnPointY: 12
+  _minEnemySpawnInterval: 0.1
+  _maxEnemySpawnInterval: 5
+  _minPowerupSpawnInterval: 3
+  _maxPowerupSpawnInterval: 10
+  _ySpawnPoint: 8
+  _xEdgeOfScreen: 11
   _enemy: {fileID: 68521324123111910, guid: 02d1e30ca79b27f4c85525d35b7f9352, type: 3}
+  _powerup: {fileID: 4033202769070887244, guid: 2c16c3380c4acee45b382219d9a00954, type: 3}
   _player: {fileID: 1803681303}
-  _spawnOffset: 5
+  _xMaxDistanceFromPlayer: 5
   _enemyContainer: {fileID: 1876228539}
+  _powerupContainer: {fileID: 404844540}
 --- !u!4 &895571967
 Transform:
   m_ObjectHideFlags: 0
@@ -350,6 +386,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1876228540}
+  - {fileID: 404844541}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -363,8 +400,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1803681306}
   - component: {fileID: 1803681305}
-  - component: {fileID: 1803681304}
   - component: {fileID: 1803681307}
+  - component: {fileID: 1803681304}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -384,16 +421,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55a3283298a73e4099aca1c03e2c12f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 8
+  _speed: 7
   _xBounds: 10
   _yBounds: 3.8
   _yCenter: 1.5
-  player: {fileID: 0}
   _maxLives: 3
-  laserOffset: {x: 0, y: 1, z: 0}
-  _laserPrefab: {fileID: 2579525131329640972, guid: 2654f5ab37eca3b488453a8208aad653, type: 3}
   _fireRate: 0.5
+  _laserOffset: {x: 0, y: 1, z: 0}
   _spawnerScript: {fileID: 895571966}
+  _singleShotPrefab: {fileID: 2579525131329640972, guid: 2654f5ab37eca3b488453a8208aad653, type: 3}
+  _trippleShotPrefab: {fileID: 563228046566561124, guid: f8fd171321a8a7f4a9dd35760664d3aa, type: 3}
+  _isTrippleShot: 0
+  _player: {fileID: 1803681303}
 --- !u!212 &1803681305
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -432,8 +471,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 91455115
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 1b4a8fdd39d3a45d0a9ee484ad6800ec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -574,7 +613,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 30215927
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 351f30ffb741fd643b82bde90a222699, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
