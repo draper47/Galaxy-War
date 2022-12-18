@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _imageForLives;
     [SerializeField] private GameObject _restartMessage;
     [SerializeField] private GameObject _gameOverText;
-    [SerializeField] private float _gameOverFlickerInterval = 1;
+    [SerializeField] private GameObject _gameManager;
+    private GameManager _gameManagerScript;
+    [SerializeField] private float _gameOverFlickerInterval = 1f;
 
     void Start()
     {
@@ -21,8 +24,16 @@ public class UIManager : MonoBehaviour
         _gameOverText.SetActive(false);
         _restartMessage.SetActive(false);
 
+        _gameManagerScript = _gameManager.GetComponent<GameManager>();
+        
+        if(_gameManagerScript == null )
+        {
+            Debug.Log("_gameManagerScript is NULL");
+        }
+
         _imageForLives = GameObject.Find("Lives_Display_image").GetComponent<Image>();
     }
+
     public void UpdateScore(int playerScore)
     {
         _scoreText.text = "Score: " + playerScore;
@@ -34,11 +45,16 @@ public class UIManager : MonoBehaviour
 
         if (livesLeft == 0) 
         {
-            StartCoroutine(GameOverAnimation());
-            _restartMessage.SetActive(true);
+            GameOverSequence();
         }
     }
 
+    void GameOverSequence()
+    {
+        _gameManagerScript.GameOver();
+        StartCoroutine(GameOverAnimation());
+        _restartMessage.SetActive(true);
+    }
     IEnumerator GameOverAnimation()
     {
         while(true)
