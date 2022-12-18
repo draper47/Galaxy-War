@@ -15,7 +15,9 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float _xEdgeOfScreen = 11;
 
     [SerializeField] private GameObject _enemy;
-    [SerializeField] private GameObject _trippleShotPowerup;
+    [SerializeField] private GameObject[] _powerups;
+
+    [SerializeField] private Player _playerScript;
     [SerializeField] private GameObject _player;
     [SerializeField] private float _xMaxDistanceFromPlayer;
     
@@ -24,18 +26,27 @@ public class Spawner : MonoBehaviour
     private bool _isPlayerDead;
     void Start()
     {
-        StartCoroutine(SpawnEnemiesRoutine());
-        StartCoroutine(SpawnPowerupRoutine());
+        _player = GameObject.Find("Player");
+        _playerScript = _player.transform.GetComponent<Player>();
+
+        if(_playerScript != null )
+        {
+            StartCoroutine(SpawnEnemiesRoutine());
+            StartCoroutine(SpawnPowerupRoutine());
+        }
     }
 
     IEnumerator SpawnEnemiesRoutine()
-    {
-        var playerScript = _player.GetComponent<Player>();
-        
+    {        
         while(_isPlayerDead == false)
         {
             float spawnInterval = Random.Range(_minEnemySpawnInterval, _maxEnemySpawnInterval);
             yield return new WaitForSeconds(spawnInterval);
+            
+            if(_player == null)
+            {
+                break;
+            }
 
             var playerPosition = _player.transform.position;
             float randomX = Random.Range(playerPosition.x - _xMaxDistanceFromPlayer, playerPosition.x + _xMaxDistanceFromPlayer);
@@ -56,7 +67,9 @@ public class Spawner : MonoBehaviour
 
             float xSpawnPoint = Random.Range(-_xEdgeOfScreen, _xEdgeOfScreen);
             Vector3 spawnPoint = new Vector3(xSpawnPoint, _ySpawnPoint, 0);
-            Instantiate(_trippleShotPowerup, spawnPoint, Quaternion.identity);
+
+            int randomPowerup = Random.Range(0, 3);
+            Instantiate(_powerups[randomPowerup], spawnPoint, Quaternion.identity);
         }
     }
 

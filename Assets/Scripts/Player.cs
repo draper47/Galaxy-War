@@ -9,6 +9,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 1;
+    [SerializeField] private float _speedBoost = 3;
     [SerializeField] private float _xBounds;
     [SerializeField] private float _yBounds;
     [SerializeField] private float _yCenter;
@@ -24,11 +25,20 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _trippleShotPrefab;
     
     private float _nextFire = 0.0f;    
-    [SerializeField] private bool _isTrippleShot;
-    
-    [SerializeField] private GameObject _player;
+    private bool _isTrippleShot;
+
+    [SerializeField] private bool _shieldsUp;
+    [SerializeField] private GameObject _shieldsVisualizer;
+
+    [SerializeField] private float _powerupTimer = 5;
+
+    public int _score = 0;
+    private UIManager _UIScript;
+
     void Start()
     {
+        _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
         _spawnerScript = GameObject.Find("Spawner").GetComponent<Spawner>();
@@ -72,19 +82,35 @@ public class Player : MonoBehaviour
         Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
     }
 
+
+    public IEnumerator ActivateSpeedBoost()
+    {
+        _speed += _speedBoost;
+        yield return new WaitForSeconds(_powerupTimer);
+        _speed -= _speedBoost;
+    }
+
     public IEnumerator ActivateTrippleShot()
     {
         _isTrippleShot = true;
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(_powerupTimer);
         _isTrippleShot = false;
     }
+
+    public void ActivateShield()
+    {
+        Debug.Log("Activated Shield");
+        _shieldsUp = true;
+        _shieldsVisualizer.SetActive(true);
+    }
+
 
     void CalcMovement()
     {
         float horizontalIn = Input.GetAxis("Horizontal");
         float verticalIn = Input.GetAxis("Vertical");
 
-        transform.Translate(Vector3.up * verticalIn * _speed * Time.deltaTime);
+        transform.Translate(Vector3.up * verticalIn * (_speed / 2f) * Time.deltaTime);
         transform.Translate(Vector3.right * horizontalIn * _speed * Time.deltaTime);
 
         if (transform.position.x > _xBounds)
@@ -101,13 +127,37 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        if (_shieldsUp == true) 
+        {
+            _shieldsUp = false;
+            _shieldsVisualizer.SetActive(false);
+            Debug.Log("Sheilds down.");
+            return;
+        }
+        
         _lives -= 1;
+
+        if (_UIScript != null)
+        {
+            _UIScript.UpdateLivesUI(_lives);
+        }
+
         Debug.Log("Lives left: " + _lives);
 
-        if (_lives <= 0) 
+        if (_lives < 1) 
         {   
             _spawnerScript.onPlayerDeath();
             Destroy(this.gameObject);
+        }
+    }
+
+    public void AddToPlayerScore(int points)
+    {
+        _score += 10;
+
+        if (_UIScript != null)
+        {
+            _UIScript.UpdateScore(_score);
         }
     }
 }
