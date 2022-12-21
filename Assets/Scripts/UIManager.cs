@@ -11,7 +11,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private Sprite[] _livesSprites;
     [SerializeField] private Image _imageForLives;
-    [SerializeField] private GameObject _restartMessage;
+    [SerializeField] private GameObject _restartOrMainMenuMessage;
     [SerializeField] private GameObject _gameOverText;
     [SerializeField] private GameObject _gameManager;
     private GameManager _gameManagerScript;
@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: 0";
 
         _gameOverText.SetActive(false);
-        _restartMessage.SetActive(false);
+        _restartOrMainMenuMessage.SetActive(false);
 
         _gameManagerScript = _gameManager.GetComponent<GameManager>();
         
@@ -42,22 +42,13 @@ public class UIManager : MonoBehaviour
     public void UpdateLivesUI(int livesLeft)
     {
         _imageForLives.sprite = _livesSprites[livesLeft];
-
-        if (livesLeft == 0) 
-        {
-            GameOverSequence();
-        }
     }
 
-    void GameOverSequence()
+    public IEnumerator StartGameOverAnimation()
     {
-        _gameManagerScript.GameOver();
-        StartCoroutine(GameOverAnimation());
-        _restartMessage.SetActive(true);
-    }
-    IEnumerator GameOverAnimation()
-    {
-        while(true)
+        _restartOrMainMenuMessage.SetActive(true);
+
+        while (true)
         {
             _gameOverText.SetActive(true);
             yield return new WaitForSeconds(_gameOverFlickerInterval);
@@ -65,5 +56,12 @@ public class UIManager : MonoBehaviour
             _gameOverText.SetActive(false);
             yield return new WaitForSeconds(_gameOverFlickerInterval);
         }
+    }
+
+    public void StopGameOverAnimation()
+    {
+        _restartOrMainMenuMessage.SetActive(false);
+
+        StopCoroutine(StartGameOverAnimation());
     }
 }

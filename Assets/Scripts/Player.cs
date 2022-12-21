@@ -34,10 +34,12 @@ public class Player : MonoBehaviour
 
     public int _score = 0;
     private UIManager _UIScript;
+    private GameManager _gameManagerScript;
 
     void Start()
     {
         _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+        _gameManagerScript = GameObject.Find("Game_Manager").GetComponent<GameManager>();
 
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
@@ -147,6 +149,7 @@ public class Player : MonoBehaviour
         if (_lives < 1) 
         {   
             _spawnerScript.onPlayerDeath();
+            _gameManagerScript.GameOver();
             Destroy(this.gameObject);
         }
     }
