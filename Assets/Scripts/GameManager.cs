@@ -17,16 +17,15 @@ public class GameManager : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            ReturnToMainMenu();
-        }
-
         if (Input.GetKeyDown(KeyCode.R) && isGameOver == true)
         {
             ResetGame();
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ReturnToMainMenu();
+        }
     }
 
     public void GameOver()

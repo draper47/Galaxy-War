@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private int _speed = 5;
+    [SerializeField] private float _speed = 5;
     [SerializeField] private float _bottom = -5.5f;
 
     [SerializeField] private Player _playerScript;
     [SerializeField] private UIManager _UIManagerScript;
     [SerializeField] private int _EnemyID = 0;
     private int _points;
+
+    private Animator _anim;
+
+    private bool _isDead;
 
     void Start()
     {
@@ -26,7 +30,24 @@ public class Enemy : MonoBehaviour
         }
 
         _playerScript = GameObject.Find("Player").transform.GetComponent<Player>();
+
+        if(_playerScript != null )
+        {
+            Debug.Log("Player Script is NULL");
+        }
+
         _UIManagerScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+        
+        if (_UIManagerScript != null)
+        {
+            Debug.Log("UIManager Script is NULL");
+        }
+        _anim = GetComponent<Animator>();
+
+        if (_anim != null)
+        {
+            Debug.Log("Animator is NULL");
+        }
     }
     void Update()
     {
@@ -63,15 +84,18 @@ public class Enemy : MonoBehaviour
             {
                 print("No Player script attached.");
             }
-            Destroy(this.gameObject);
+            Destroy(this.gameObject, 2.8f);
         }
 
         // Collided with projectile
-        if (other.tag == "Projectile")
+        if (other.tag == "Projectile" && _isDead != true)
         {
+            _isDead = true;
             Destroy(other.gameObject);
             AddToScore();
-            Destroy(this.gameObject);
+            _anim.SetTrigger("Death");
+            StartCoroutine(SlowDown());
+            Destroy(this.gameObject, 2.8f);
         }
 
     }
@@ -89,4 +113,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    IEnumerator SlowDown()
+    {
+        while(_speed > 0)
+        {
+            _speed -= .5f;
+            yield return new WaitForSeconds(.1f);
+        }
+
+    }
 }
