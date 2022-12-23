@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 1490710563038040231}
   - component: {fileID: 4059973659168017780}
   - component: {fileID: 6632104479683944428}
-  - component: {fileID: 1179849403606653055}
+  - component: {fileID: -4816316732565212447}
+  - component: {fileID: -4049144921223138515}
   m_Layer: 0
   m_Name: Asteroid
   m_TagString: Untagged
@@ -73,8 +74,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 91455115
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 6691643d9d08ede40bc93504dc8acb2e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -124,7 +125,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.3650423
---- !u!114 &1179849403606653055
+--- !u!114 &-4816316732565212447
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,4 +138,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationDegreesPerSecond: 20
-  _explosion: {fileID: 7513239380781052036, guid: e7cf1ac05cb80a847838effd64d5374f, type: 3}
+  _explosionPrefab: {fileID: 7513239380781052036, guid: e7cf1ac05cb80a847838effd64d5374f, type: 3}
+  _spawnManager: {fileID: 0}
+--- !u!114 &-4049144921223138515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8309869890838570359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68e2bda749c954c4ba35cef1d42d4fff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationDegreesPerSecond: 20
+  _explosionPrefab: {fileID: 7513239380781052036, guid: e7cf1ac05cb80a847838effd64d5374f, type: 3}
+  _spawnManager: {fileID: 0}

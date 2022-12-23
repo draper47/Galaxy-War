@@ -36,6 +36,11 @@ public class Player : MonoBehaviour
     private UIManager _UIScript;
     private GameManager _gameManagerScript;
 
+    [SerializeField] private GameObject[] _enginesOutVisuals;
+    private bool _engine00_Out;
+    private bool _engine01_Out;
+    private int _engineOutIndex;
+
     void Start()
     {
         _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
@@ -144,6 +149,8 @@ public class Player : MonoBehaviour
             _UIScript.UpdateLivesUI(_lives);
         }
 
+        EnginesOutVisual();
+
         Debug.Log("Lives left: " + _lives);
 
         if (_lives < 1) 
@@ -151,6 +158,37 @@ public class Player : MonoBehaviour
             _spawnerScript.onPlayerDeath();
             _gameManagerScript.GameOver();
             Destroy(this.gameObject);
+        }
+    }
+
+    void EnginesOutVisual()
+    {
+        if (_engine00_Out != true && _engine01_Out != true)
+        {
+            _engineOutIndex = UnityEngine.Random.Range(0, 2);
+        } 
+        else if (_engine01_Out == true)
+        {
+            _engineOutIndex = 0;
+        }
+        else if (_engine00_Out == true)
+        {
+            _engineOutIndex = 1;
+        }
+
+        switch (_engineOutIndex)
+        {
+            case 0:
+                _enginesOutVisuals[0].SetActive(true);
+                _engine00_Out = true;
+                break;
+            case 1:
+                _enginesOutVisuals[1].SetActive(true);
+                _engine01_Out = true;
+                break;
+            default:
+                Debug.Log("Invalid random number");
+                break;
         }
     }
 

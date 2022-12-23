@@ -29,15 +29,24 @@ public class Spawner : MonoBehaviour
         _player = GameObject.Find("Player");
         _playerScript = _player.transform.GetComponent<Player>();
 
-        if(_playerScript != null )
+        if(_playerScript == null )
         {
-            StartCoroutine(SpawnEnemiesRoutine());
-            StartCoroutine(SpawnPowerupRoutine());
+            Debug.Log("Player Script is NULL");
         }
     }
 
+    public void StartSpawning()
+    {
+        Debug.Log("Start Spawning called");
+
+        StartCoroutine(SpawnEnemiesRoutine());
+        StartCoroutine(SpawnPowerupsRoutine());
+    }
+
     IEnumerator SpawnEnemiesRoutine()
-    {        
+    {
+        yield return new WaitForSeconds(3f);
+
         while(_isPlayerDead == false)
         {
             float spawnInterval = Random.Range(_minEnemySpawnInterval, _maxEnemySpawnInterval);
@@ -58,8 +67,10 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnPowerupRoutine()
+    IEnumerator SpawnPowerupsRoutine()
     {
+        yield return new WaitForSeconds(3f);
+
         while (_isPlayerDead == false)
         {
             float spawnInterval = Random.Range(_minPowerupSpawnInterval, _maxPowerupSpawnInterval);

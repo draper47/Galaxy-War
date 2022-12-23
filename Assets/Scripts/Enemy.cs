@@ -31,22 +31,23 @@ public class Enemy : MonoBehaviour
 
         _playerScript = GameObject.Find("Player").transform.GetComponent<Player>();
 
-        if(_playerScript != null )
+        if(_playerScript == null )
         {
             Debug.Log("Player Script is NULL");
         }
 
         _UIManagerScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
         
-        if (_UIManagerScript != null)
+        if (_UIManagerScript == null)
         {
             Debug.Log("UIManager Script is NULL");
         }
+
         _anim = GetComponent<Animator>();
 
-        if (_anim != null)
+        if (_anim == null)
         {
-            Debug.Log("Animator is NULL");
+            Debug.Log("Enemy Animator is NULL");
         }
     }
     void Update()
@@ -84,20 +85,25 @@ public class Enemy : MonoBehaviour
             {
                 print("No Player script attached.");
             }
-            Destroy(this.gameObject, 2.8f);
+
+            Death();
         }
 
         // Collided with projectile
         if (other.tag == "Projectile" && _isDead != true)
         {
-            _isDead = true;
             Destroy(other.gameObject);
             AddToScore();
-            _anim.SetTrigger("Death");
-            StartCoroutine(SlowDown());
-            Destroy(this.gameObject, 2.8f);
+            Death();
         }
+    }
 
+    void Death()
+    {
+        _anim.SetTrigger("Death");
+        StartCoroutine(SlowDown());
+        _isDead = true;
+        Destroy(this.gameObject, 2.8f);
     }
 
     void AddToScore()
@@ -120,6 +126,5 @@ public class Enemy : MonoBehaviour
             _speed -= .5f;
             yield return new WaitForSeconds(.1f);
         }
-
     }
 }
