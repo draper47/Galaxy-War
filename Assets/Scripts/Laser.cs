@@ -7,7 +7,19 @@ public class Laser : MonoBehaviour
 
     [SerializeField] private float _speed;
     [SerializeField] private float _topScreen = 8;
+    [SerializeField] private AudioClip _laserSound;
 
+    void Start()
+    {
+        if(_laserSound != null)
+        {
+            AudioSource.PlayClipAtPoint(_laserSound, transform.position);
+        }
+        else
+        {
+            Debug.Log("No laser sound game object or Audio Source");
+        }
+    }
     void Update()
     {
         LaserMovement();

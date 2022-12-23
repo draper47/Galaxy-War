@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
 
     private bool _isDead;
 
+    [SerializeField] private AudioClip _explosionSound;
+
     void Start()
     {
         switch (_EnemyID)
@@ -25,7 +27,7 @@ public class Enemy : MonoBehaviour
                 break;
             
             default:
-                Debug.Log("Invalid Enemy ID");
+                Debug.LogError("Invalid Enemy ID");
                 break;
         }
 
@@ -33,21 +35,26 @@ public class Enemy : MonoBehaviour
 
         if(_playerScript == null )
         {
-            Debug.Log("Player Script is NULL");
+            Debug.LogError("Player Script is NULL");
         }
 
         _UIManagerScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
         
         if (_UIManagerScript == null)
         {
-            Debug.Log("UIManager Script is NULL");
+            Debug.LogError("UIManager Script is NULL");
         }
 
         _anim = GetComponent<Animator>();
 
         if (_anim == null)
         {
-            Debug.Log("Enemy Animator is NULL");
+            Debug.LogError("Enemy Animator is NULL");
+        }
+
+        if (_explosionSound == null)
+        {
+            Debug.LogError("Enemy Explosion Sound is NULL");
         }
     }
     void Update()
@@ -103,6 +110,8 @@ public class Enemy : MonoBehaviour
         _anim.SetTrigger("Death");
         StartCoroutine(SlowDown());
         _isDead = true;
+        AudioSource.PlayClipAtPoint(_explosionSound, transform.position);
+
         Destroy(this.gameObject, 2.8f);
     }
 

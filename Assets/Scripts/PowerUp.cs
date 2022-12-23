@@ -9,11 +9,19 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private int _powerupID;
     [SerializeField] private float _speed = 3;
     [SerializeField] private float _bottomOfScreen = -6;
-    
+
     private Player _playerScript;
-
-
     private string _playerTag = "Player";
+
+    [SerializeField] private AudioClip _collectedPowerupSound;
+
+    void Start()
+    {
+        if(_collectedPowerupSound == null)
+        {
+            Debug.LogError("PowerUp._collectedPowerupSound == NULL");
+        }
+    }
 
     void Update()
     {
@@ -34,8 +42,8 @@ public class PowerUp : MonoBehaviour
         if (other.tag == _playerTag)
         {
             _playerScript = other.transform.GetComponent<Player>();
-            ActivatePowerup();
-            Destroy(this.gameObject);
+
+            CollectedPowerup();
         }
     }
 
@@ -63,5 +71,16 @@ public class PowerUp : MonoBehaviour
         {
             Debug.Log("No player script attached");
         }
+    }
+
+    void CollectedPowerup()
+    {
+        if (_collectedPowerupSound != null)
+        {
+            AudioSource.PlayClipAtPoint(_collectedPowerupSound, transform.position);
+        }
+
+        ActivatePowerup();
+        Destroy(this.gameObject);
     }
 }

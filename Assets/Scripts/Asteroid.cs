@@ -8,6 +8,7 @@ public class Asteroid : MonoBehaviour
     
     [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private Spawner _spawnManager;
+    private bool _hit;
 
     void Start()
     {
@@ -31,8 +32,9 @@ public class Asteroid : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Projectile")
+        if (other.tag == "Projectile" && _hit != true)
         {
+            _hit = true;
             _spawnManager.StartSpawning();
             Destroy(other.gameObject);
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);

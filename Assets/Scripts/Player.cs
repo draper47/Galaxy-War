@@ -20,11 +20,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float _fireRate = 0.5f;
     [SerializeField] private Vector3 _laserOffset;
     [SerializeField] private Spawner _spawnerScript;
-    
+
     [SerializeField] private GameObject _singleShotPrefab;
     [SerializeField] private GameObject _trippleShotPrefab;
-    
-    private float _nextFire = 0.0f;    
+
+    private float _nextFire = 0.0f;
     private bool _isTrippleShot;
 
     [SerializeField] private bool _shieldsUp;
@@ -41,18 +41,37 @@ public class Player : MonoBehaviour
     private bool _engine01_Out;
     private int _engineOutIndex;
 
+    [SerializeField] private GameObject _explosionPrefab;
+
     void Start()
     {
-        _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
-        _gameManagerScript = GameObject.Find("Game_Manager").GetComponent<GameManager>();
-
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
+
+        _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+        
+        if (_UIScript == null )
+        {
+            Debug.LogError("Player._UIScript == NULL");
+        }
+
+        _gameManagerScript = GameObject.Find("Game_Manager").GetComponent<GameManager>();
+
+        if (_gameManagerScript == null )
+        {
+            Debug.LogError("Player._gameManagerScript == NULL");
+        }
+
         _spawnerScript = GameObject.Find("Spawner").GetComponent<Spawner>();
 
         if (_spawnerScript == null)
         {
             print("Spawner script is null. Cannot find the Spawner scipt.");
+        }
+
+        if (_explosionPrefab == null)
+        {
+            Debug.LogError("Player._explosionPrefab == NULL");
         }
     }
 
@@ -154,11 +173,17 @@ public class Player : MonoBehaviour
         Debug.Log("Lives left: " + _lives);
 
         if (_lives < 1) 
-        {   
-            _spawnerScript.onPlayerDeath();
-            _gameManagerScript.GameOver();
-            Destroy(this.gameObject);
+        {
+            Death();
         }
+    }
+
+    void Death()
+    {
+        _spawnerScript.onPlayerDeath();
+        _gameManagerScript.GameOver();
+        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        Destroy(this.gameObject);
     }
 
     void EnginesOutVisual()
