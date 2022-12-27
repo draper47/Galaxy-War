@@ -48,11 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448728149f367aa4aa52468eaaacf8c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 3
+  _speed: 2
   _bottom: -5.5
   _playerScript: {fileID: 0}
   _UIManagerScript: {fileID: 0}
   _EnemyID: 0
+  _laserPrefab: {fileID: 5428091454132633465, guid: 407ea6c5c4082fb4586940c1fce23e1d, type: 3}
+  _laserOffset: {x: 0, y: 0, z: 0}
+  _minFireRate: 3
+  _maxFireRate: 7
   _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
 --- !u!50 &243653589000179956
 Rigidbody2D:

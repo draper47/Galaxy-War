@@ -1,6 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Security.Principal;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
@@ -49,7 +48,7 @@ public class Spawner : MonoBehaviour
 
         while(_isPlayerDead == false)
         {
-            float spawnInterval = Random.Range(_minEnemySpawnInterval, _maxEnemySpawnInterval);
+            float spawnInterval = UnityEngine.Random.Range(_minEnemySpawnInterval, _maxEnemySpawnInterval);
             yield return new WaitForSeconds(spawnInterval);
             
             if(_player == null)
@@ -58,7 +57,7 @@ public class Spawner : MonoBehaviour
             }
 
             var playerPosition = _player.transform.position;
-            float randomX = Random.Range(playerPosition.x - _xMaxDistanceFromPlayer, playerPosition.x + _xMaxDistanceFromPlayer);
+            float randomX = UnityEngine.Random.Range(playerPosition.x - _xMaxDistanceFromPlayer, playerPosition.x + _xMaxDistanceFromPlayer);
             Vector3 randomSpawnPoint = new Vector3(Mathf.Clamp(randomX, -9f, 9f), _ySpawnPoint, 0f);
             
             GameObject newEnemy = Instantiate(_enemy, randomSpawnPoint, Quaternion.identity);
@@ -73,13 +72,13 @@ public class Spawner : MonoBehaviour
 
         while (_isPlayerDead == false)
         {
-            float spawnInterval = Random.Range(_minPowerupSpawnInterval, _maxPowerupSpawnInterval);
+            float spawnInterval = UnityEngine.Random.Range(_minPowerupSpawnInterval, _maxPowerupSpawnInterval);
             yield return new WaitForSeconds(spawnInterval);
 
-            float xSpawnPoint = Random.Range(-_xEdgeOfScreen, _xEdgeOfScreen);
+            float xSpawnPoint = UnityEngine.Random.Range(-_xEdgeOfScreen, _xEdgeOfScreen);
             Vector3 spawnPoint = new Vector3(xSpawnPoint, _ySpawnPoint, 0);
 
-            int randomPowerup = Random.Range(0, 3);
+            int randomPowerup = UnityEngine.Random.Range(0, 3);
             Instantiate(_powerups[randomPowerup], spawnPoint, Quaternion.identity);
         }
     }

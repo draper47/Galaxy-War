@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,7 +12,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int _EnemyID = 0;
     private int _points;
 
-    private Animator _anim;
+    [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private Vector3 _laserOffset;
+    [SerializeField] private float _minFireRate;
+    [SerializeField] private float _maxFireRate;
+
+    private Animator _animator;
 
     private bool _isDead;
 
@@ -45,9 +50,9 @@ public class Enemy : MonoBehaviour
             Debug.LogError("UIManager Script is NULL");
         }
 
-        _anim = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
 
-        if (_anim == null)
+        if (_animator == null)
         {
             Debug.LogError("Enemy Animator is NULL");
         }
@@ -56,6 +61,8 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Enemy Explosion Sound is NULL");
         }
+
+        StartCoroutine(FireLaser());
     }
     void Update()
     {
@@ -107,11 +114,11 @@ public class Enemy : MonoBehaviour
 
     void Death()
     {
-        _anim.SetTrigger("Death");
+        _animator.SetTrigger("Death");
         StartCoroutine(SlowDown());
         _isDead = true;
         AudioSource.PlayClipAtPoint(_explosionSound, transform.position);
-
+        Destroy(GetComponent<Collider2D>());
         Destroy(this.gameObject, 2.8f);
     }
 
@@ -134,6 +141,20 @@ public class Enemy : MonoBehaviour
         {
             _speed -= .5f;
             yield return new WaitForSeconds(.1f);
+        }
+    }
+
+    IEnumerator FireLaser()
+    {
+        yield return new WaitForSeconds(.5f);
+        float randomFireRate;
+
+        while(_isDead != true)
+        {
+            GameObject laser = Instantiate(_laserPrefab, transform.position + _laserOffset, Quaternion.identity);
+            laser.GetComponent<Laser>().AssignEnemyLaser();
+            randomFireRate = UnityEngine.Random.Range(_minFireRate, _maxFireRate);
+            yield return new WaitForSeconds(randomFireRate);
         }
     }
 }

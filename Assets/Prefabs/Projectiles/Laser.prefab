@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2579525131329640972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.927, z: 0}
-  m_LocalScale: {x: 0.071511686, y: 0.33006382, z: 0}
+  m_LocalScale: {x: 0.16991848, y: 0.1732835, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -146,5 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52610e6be76451b488d4e4ecfcfa0dac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 8
+  _speed: 12
   _topScreen: 8
+  _laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  _timeUntilOffScreen: 1
+  _isEnemyLaser: 0
