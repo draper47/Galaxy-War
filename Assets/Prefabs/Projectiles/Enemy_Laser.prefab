@@ -96,8 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 8
-  _topScreen: 8
-  _laserSound: {fileID: 0}
+  _laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _timeUntilOffScreen: 2
   _isEnemyLaser: 0
 --- !u!1001 &5428091455091394914

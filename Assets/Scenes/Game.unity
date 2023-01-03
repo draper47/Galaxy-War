@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 10279016}
   - component: {fileID: 10279015}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: UI_Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1617,7 +1617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7182f7663d8daf747ac3528ae611a053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UIManager: {fileID: 10279014}
+  _uiManager: {fileID: 10279014}
   _scriptUIManager: {fileID: 0}
   isGameOver: 0
 --- !u!4 &1497749118
@@ -1667,8 +1667,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55a3283298a73e4099aca1c03e2c12f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 5
-  _speedBoost: 3
+  _totalSpeed: 0
+  _baseSpeed: 5
+  _powerupSpeedBoost: 3
+  _thrusterPower: 5
+  _thrusterRechargeDelay: 3
+  _thrusterRechargeDelayTimer: 0
+  _thrusterPercentage: 100
+  _thrusterDischargeRate: 0.2
+  _thrusterRechargeRate: 0.02
   _xBounds: 10
   _yBounds: 3.8
   _yCenter: 1.5
@@ -1681,7 +1688,6 @@ MonoBehaviour:
   _shieldsUp: 0
   _shieldsVisualizer: {fileID: 1354497730}
   _powerupTimer: 5
-  _score: 0
   _enginesOutVisuals:
   - {fileID: 790283749}
   - {fileID: 553018623}
@@ -2090,9 +2096,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 91455115
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a45d21c30e0154a9ca1a5d6fb2bf3cfa, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

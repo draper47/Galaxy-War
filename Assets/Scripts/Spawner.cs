@@ -36,8 +36,6 @@ public class Spawner : MonoBehaviour
 
     public void StartSpawning()
     {
-        Debug.Log("Start Spawning called");
-
         StartCoroutine(SpawnEnemiesRoutine());
         StartCoroutine(SpawnPowerupsRoutine());
     }

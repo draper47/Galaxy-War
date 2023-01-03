@@ -5,14 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _UIManager;
+    [SerializeField] private GameObject _uiManager;
     [SerializeField] private UIManager _scriptUIManager;
     [SerializeField] private bool isGameOver;
     private AudioSource _backgroundMusic;
 
     private void Start()
     {
-        _scriptUIManager = _UIManager.GetComponent<UIManager>();
+        _scriptUIManager = _uiManager.GetComponent<UIManager>();
 
         if(_scriptUIManager == null)
         {

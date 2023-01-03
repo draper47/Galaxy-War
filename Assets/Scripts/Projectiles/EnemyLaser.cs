@@ -22,7 +22,7 @@ public class EnemyLaser : MonoBehaviour
     void Update()
     {
         LaserMovement();
-        OffScreen();
+        LaserOffScreen();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -47,7 +47,7 @@ public class EnemyLaser : MonoBehaviour
         transform.Translate(Vector3.down * Time.deltaTime * _speed);
     }
 
-    void OffScreen()
+    void LaserOffScreen()
     {
         if (transform.position.y > _bottomScreen)
         {

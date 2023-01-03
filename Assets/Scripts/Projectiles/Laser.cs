@@ -6,7 +6,6 @@ public class Laser : MonoBehaviour
 {
 
     [SerializeField] private float _speed = 8;
-    [SerializeField] private float _topScreen = 8;
     [SerializeField] private AudioClip _laserSound;
     [SerializeField] private float _timeUntilOffScreen = 1.5f;
 

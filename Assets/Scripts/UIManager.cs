@@ -43,6 +43,16 @@ public class UIManager : MonoBehaviour
         _imageForLives.sprite = _livesSprites[livesLeft];
     }
 
+    public void UpdateBoostBar(float boostPercentage)
+    {
+        Slider boostBarSliderValue = GameObject.Find("BoostBar").GetComponent<Slider>();
+        
+        if (boostBarSliderValue != null)
+        {
+            boostBarSliderValue.value = boostPercentage;
+        }
+    }
+
     public IEnumerator StartGameOverAnimation()
     {
         _restartOrMainMenuMessage.SetActive(true);

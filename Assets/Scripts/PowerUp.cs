@@ -62,13 +62,13 @@ public class PowerUp : MonoBehaviour
                     _playerScript.ActivateShield();
                     break;
                 default:
-                    Debug.Log("Invalid _powerupID");
+                    Debug.Log("Invalid _powerupID value");
                     break;
             }
         }
         else
         {
-            Debug.Log("No player script attached");
+            Debug.LogError("PowerUp._playerScript == NULL");
         }
     }
 

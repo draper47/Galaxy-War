@@ -16,7 +16,7 @@ public class Asteroid : MonoBehaviour
 
         if(_spawnManager == null)
         {
-            Debug.Log("Spawner Script is null");
+            Debug.LogError("Asteroid._spawnManager == NULL");
         }
     }
 

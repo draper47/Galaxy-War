@@ -8,8 +8,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _bottom = -5.5f;
 
     [SerializeField] private Player _playerScript;
-    [SerializeField] private UIManager _UIManagerScript;
-    [SerializeField] private int _EnemyID = 0;
+    [SerializeField] private UIManager _uiManagerScript;
+    [SerializeField] private int _enemyID = 0;
     private int _points;
 
     [SerializeField] private GameObject _laserPrefab;
@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        switch (_EnemyID)
+        switch (_enemyID)
         {
             case 0:
                 _points = 10;
@@ -40,26 +40,26 @@ public class Enemy : MonoBehaviour
 
         if(_playerScript == null )
         {
-            Debug.LogError("Player Script is NULL");
+            Debug.LogError("Enemy._playerScript == NULL");
         }
 
-        _UIManagerScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+        _uiManagerScript = GameObject.Find("UI_Manager").transform.GetComponent<UIManager>();
         
-        if (_UIManagerScript == null)
+        if (_uiManagerScript == null)
         {
-            Debug.LogError("UIManager Script is NULL");
+            Debug.LogError("Enemy._uiManagerScript == NULL");
         }
 
         _animator = GetComponent<Animator>();
 
         if (_animator == null)
         {
-            Debug.LogError("Enemy Animator is NULL");
+            Debug.LogError("Enemy._animator == NULL");
         }
 
         if (_explosionSound == null)
         {
-            Debug.LogError("Enemy Explosion Sound is NULL");
+            Debug.LogError("Enemy._explosionSound == NULL");
         }
 
         StartCoroutine(FireLaser());

@@ -4,8 +4,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1;
-    [SerializeField] private float _speedBoost = 3;
+    [SerializeField] private float _totalSpeed;
+    [SerializeField] private float _baseSpeed = 5f;
+    [SerializeField] private float _powerupSpeedBoost = 3f;
+
+    [SerializeField] private float _thrusterSpeedBoost = 5;
+    [SerializeField] private float _thrusterRechargeDelay = 3f;
+    [SerializeField] private float _thrusterRechargeDelayTimer;
+    [SerializeField] private float _thrusterPercentage = 1;
+    [SerializeField] private float _thrusterDischargeRate = .1f;
+    [SerializeField] private float _thrusterRechargeRate = .05f;
+    private bool _thrusterEngaged;
+
     [SerializeField] private float _xBounds;
     [SerializeField] private float _yBounds;
     [SerializeField] private float _yCenter;
@@ -28,8 +38,8 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float _powerupTimer = 5;
 
-    public int _score = 0;
-    private UIManager _UIScript;
+    private int _score = 0;
+    private UIManager _uiScript;
     private GameManager _gameManagerScript;
 
     [SerializeField] private GameObject[] _enginesOutVisuals;
@@ -43,10 +53,12 @@ public class Player : MonoBehaviour
     {
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
+        _totalSpeed = _baseSpeed;
+        _thrusterPercentage = 1;
 
-        _UIScript = GameObject.Find("Canvas").transform.GetComponent<UIManager>();
+        _uiScript = GameObject.Find("UI_Manager").transform.GetComponent<UIManager>();
         
-        if (_UIScript == null )
+        if (_uiScript == null )
         {
             Debug.LogError("Player._UIScript == NULL");
         }
@@ -80,6 +92,55 @@ public class Player : MonoBehaviour
             FireProjectile();
             _nextFire = Time.time + _fireRate;
         }
+
+        if (Input.GetAxis("Thruster") > 0 && _thrusterPercentage > 0)
+        {
+            ThrusterOn();
+        }
+        else
+        {
+            ThrusterOff();
+        }
+
+        if (_uiScript != null)
+        {
+            _uiScript.UpdateBoostBar(_thrusterPercentage);
+        }
+    }
+
+    void ThrusterOn()
+    {
+        float thrusterIn = Input.GetAxis("Thruster");
+
+        _totalSpeed = _baseSpeed + (thrusterIn * _thrusterSpeedBoost);
+        _thrusterPercentage -= (Time.deltaTime * _thrusterDischargeRate);
+        _thrusterRechargeDelayTimer = 0;
+        _thrusterEngaged = true;
+    }
+
+    void ThrusterOff()
+    {
+        _totalSpeed = _baseSpeed;
+
+        if (_thrusterRechargeDelayTimer < 4f)
+        {
+            _thrusterRechargeDelayTimer += Time.deltaTime * 1;
+        }
+
+        if (_thrusterRechargeDelayTimer >= _thrusterRechargeDelay)
+        {
+            ThrusterRecharge();
+        }
+
+        _thrusterEngaged = false;
+    }
+
+    void ThrusterRecharge()
+    {
+        if (_thrusterPercentage < 1)
+        {
+            _thrusterPercentage += Time.deltaTime * _thrusterRechargeRate;
+        }
     }
 
     void FireProjectile()
@@ -107,9 +168,12 @@ public class Player : MonoBehaviour
 
     public IEnumerator ActivateSpeedBoost()
     {
-        _speed += _speedBoost;
+        Debug.Log("Speed Boost");
+        _baseSpeed += _powerupSpeedBoost;
+        
         yield return new WaitForSeconds(_powerupTimer);
-        _speed -= _speedBoost;
+        
+        _baseSpeed -= _powerupSpeedBoost;
     }
 
     public IEnumerator ActivateTrippleShot()
@@ -121,19 +185,18 @@ public class Player : MonoBehaviour
 
     public void ActivateShield()
     {
-        Debug.Log("Activated Shield");
         _shieldsUp = true;
         _shieldsVisualizer.SetActive(true);
     }
-
 
     void CalcMovement()
     {
         float horizontalIn = Input.GetAxis("Horizontal");
         float verticalIn = Input.GetAxis("Vertical");
+        
 
-        transform.Translate(Vector3.up * verticalIn * (_speed / 2f) * Time.deltaTime);
-        transform.Translate(Vector3.right * horizontalIn * _speed * Time.deltaTime);
+        transform.Translate(Vector3.up * verticalIn * (_totalSpeed / 2f) * Time.deltaTime);
+        transform.Translate(Vector3.right * horizontalIn * _totalSpeed * Time.deltaTime);
 
         if (transform.position.x > _xBounds)
         {
@@ -159,9 +222,9 @@ public class Player : MonoBehaviour
         
         _lives -= 1;
 
-        if (_UIScript != null)
+        if (_uiScript != null)
         {
-            _UIScript.UpdateLivesUI(_lives);
+            _uiScript.UpdateLivesUI(_lives);
         }
 
         EnginesOutVisual();
@@ -217,9 +280,9 @@ public class Player : MonoBehaviour
     {
         _score += 10;
 
-        if (_UIScript != null)
+        if (_uiScript != null)
         {
-            _UIScript.UpdateScore(_score);
+            _uiScript.UpdateScore(_score);
         }
     }
 }
