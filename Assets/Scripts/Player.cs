@@ -9,32 +9,40 @@ public class Player : MonoBehaviour
     [SerializeField] private float _powerupSpeedBoost = 3f;
 
     [SerializeField] private float _thrusterSpeedBoost = 5;
-    [SerializeField] private float _thrusterRechargeDelay = 3f;
-    [SerializeField] private float _thrusterRechargeDelayTimer;
-    [SerializeField] private float _thrusterPercentage = 1;
-    [SerializeField] private float _thrusterDischargeRate = .1f;
-    [SerializeField] private float _thrusterRechargeRate = .05f;
-    private bool _thrusterEngaged;
+    [SerializeField] private float _thrusterCooldownRate = 10;
+    [SerializeField] private float _thrusterHeatBuildup = 0;
+    [SerializeField] private float _thrusterHeatBuildupRate = 50;
+    private bool _coolingDownThruster;
 
     [SerializeField] private float _xBounds;
     [SerializeField] private float _yBounds;
     [SerializeField] private float _yCenter;
 
-    private int _lives;
+    [SerializeField] private int _lives;
     [SerializeField] private int _maxLives = 3;
 
     [SerializeField] private float _fireRate = 0.5f;
     [SerializeField] private Vector3 _laserOffset;
     [SerializeField] private Spawner _spawnerScript;
 
+    [SerializeField] private int _ammoMax = 15;
+    [SerializeField] private int _ammoLeft;
+
     [SerializeField] private GameObject _singleShotPrefab;
     [SerializeField] private GameObject _trippleShotPrefab;
 
+    private int _ammoTypeIndex;
     private float _nextFire = 0.0f;
-    private bool _isTrippleShot;
+    private bool _firingTrippleShot;
+
+    private bool _firingExplodingLaser;
+    [SerializeField] private GameObject _explodingLaserPrefab;
 
     [SerializeField] private bool _shieldsUp;
     [SerializeField] private GameObject _shieldsVisualizer;
+    [SerializeField] private int _shieldHitsMax = 2;
+    private int _shieldHitsLeft = 0;
+    [SerializeField] private Color[] _shieldColors;
 
     [SerializeField] private float _powerupTimer = 5;
 
@@ -43,9 +51,6 @@ public class Player : MonoBehaviour
     private GameManager _gameManagerScript;
 
     [SerializeField] private GameObject[] _enginesOutVisuals;
-    private bool _engine00_Out;
-    private bool _engine01_Out;
-    private int _engineOutIndex;
 
     [SerializeField] private GameObject _explosionPrefab;
 
@@ -54,7 +59,9 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(0, 0, 0);
         _lives = _maxLives;
         _totalSpeed = _baseSpeed;
-        _thrusterPercentage = 1;
+        _thrusterHeatBuildup = 0;
+        _ammoLeft = _ammoMax;
+        _ammoTypeIndex = 0;
 
         _uiScript = GameObject.Find("UI_Manager").transform.GetComponent<UIManager>();
         
@@ -87,24 +94,32 @@ public class Player : MonoBehaviour
     {
         CalcMovement();        
         
-        if (Input.GetKey(KeyCode.Space) && Time.time >= _nextFire)
+        if (Input.GetKey(KeyCode.Space) && Time.time >= _nextFire && _ammoLeft > 0)
         {
             FireProjectile();
             _nextFire = Time.time + _fireRate;
         }
 
-        if (Input.GetAxis("Thruster") > 0 && _thrusterPercentage > 0)
+        if (Input.GetAxis("Thruster") > 0 && _thrusterHeatBuildup < 1 && !_coolingDownThruster)
         {
             ThrusterOn();
         }
         else
         {
-            ThrusterOff();
+            _totalSpeed = _baseSpeed;
+
+            ThrusterCooldown();
         }
 
         if (_uiScript != null)
         {
-            _uiScript.UpdateBoostBar(_thrusterPercentage);
+            _uiScript.UpdateThrusterHeatBuildupBar(_thrusterHeatBuildup, _coolingDownThruster);
+        }
+
+        if (_ammoLeft < 1 && Time.time >= _nextFire && _ammoTypeIndex > 0)
+        {
+            _ammoTypeIndex = 0;
+            _ammoLeft = _ammoMax;
         }
     }
 
@@ -113,62 +128,82 @@ public class Player : MonoBehaviour
         float thrusterIn = Input.GetAxis("Thruster");
 
         _totalSpeed = _baseSpeed + (thrusterIn * _thrusterSpeedBoost);
-        _thrusterPercentage -= (Time.deltaTime * _thrusterDischargeRate);
-        _thrusterRechargeDelayTimer = 0;
-        _thrusterEngaged = true;
+        _thrusterHeatBuildup += (Time.deltaTime * _thrusterHeatBuildupRate);
+
+        if (_thrusterHeatBuildup >= 1)
+        {
+            _coolingDownThruster = true;
+        }
     }
 
-    void ThrusterOff()
+    void ThrusterCooldown()
     {
-        _totalSpeed = _baseSpeed;
-
-        if (_thrusterRechargeDelayTimer < 4f)
+        if (_thrusterHeatBuildup > 0)
         {
-            _thrusterRechargeDelayTimer += Time.deltaTime * 1;
+            _thrusterHeatBuildup -= Time.deltaTime * _thrusterCooldownRate;
         }
 
-        if (_thrusterRechargeDelayTimer >= _thrusterRechargeDelay)
+        if (_thrusterHeatBuildup <= 0)
         {
-            ThrusterRecharge();
-        }
-
-        _thrusterEngaged = false;
-    }
-
-    void ThrusterRecharge()
-    {
-        if (_thrusterPercentage < 1)
-        {
-            _thrusterPercentage += Time.deltaTime * _thrusterRechargeRate;
+            _coolingDownThruster = false;
         }
     }
 
     void FireProjectile()
     {
-        if(_isTrippleShot == true)
+        switch (_ammoTypeIndex)
         {
-            TrippleShot();
+            default:
+                FireSingleShot();
+                _ammoLeft -= 1;
+                break;
+            case 1:
+                FireTrippleShot();
+                _ammoLeft -= 3;
+                break;
+            case 2:
+                FireExplodingLaser();
+                _ammoLeft -= 5;
+                break;
         }
-        else
-        {
-            SingleShot();
-        }
+
+        _uiScript.UpdateAmmoClipUI(_ammoLeft);
     }
 
-    private void SingleShot()
+    public void RefillAmmo()
+    {
+        _ammoLeft = _ammoMax;
+
+        _uiScript.UpdateAmmoClipUI(_ammoLeft);
+    }
+
+    private void FireSingleShot()
     {
         Instantiate(_singleShotPrefab, transform.position + _laserOffset, Quaternion.identity);
     }
 
-    private void TrippleShot()
+    private void FireTrippleShot()
     {
         Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
     }
 
+    private void FireExplodingLaser()
+    {
+        Instantiate(_explodingLaserPrefab, transform.position + _laserOffset, Quaternion.identity);
+    }
+
+    public void ActivateTrippleShot()
+    {
+        _ammoTypeIndex = 1;
+    }
+
+    public void ActivateExplodingLaser()
+    {
+        _ammoTypeIndex = 2;
+    }
 
     public IEnumerator ActivateSpeedBoost()
     {
-        Debug.Log("Speed Boost");
         _baseSpeed += _powerupSpeedBoost;
         
         yield return new WaitForSeconds(_powerupTimer);
@@ -176,16 +211,11 @@ public class Player : MonoBehaviour
         _baseSpeed -= _powerupSpeedBoost;
     }
 
-    public IEnumerator ActivateTrippleShot()
-    {
-        _isTrippleShot = true;
-        yield return new WaitForSeconds(_powerupTimer);
-        _isTrippleShot = false;
-    }
-
     public void ActivateShield()
     {
         _shieldsUp = true;
+        _shieldHitsLeft = _shieldHitsMax;
+        _shieldsVisualizer.GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,1f);
         _shieldsVisualizer.SetActive(true);
     }
 
@@ -211,15 +241,70 @@ public class Player : MonoBehaviour
     }
 
     public void Damage()
-    {
-        if (_shieldsUp == true) 
+    {       
+        if (_shieldsUp)
         {
-            _shieldsUp = false;
-            _shieldsVisualizer.SetActive(false);
-            Debug.Log("Sheilds down.");
-            return;
+            ShieldsUpDamage();
         }
-        
+        else
+        {
+            ShieldsDownDamage();
+        }
+    }
+
+    public void Repair()
+    {
+        if (_lives < _maxLives)
+        {
+            _lives += 1;
+        }
+
+        _uiScript.UpdateLivesUI(_lives);
+
+        switch (_lives)
+        {
+            case 3:
+                _enginesOutVisuals[0].SetActive(false);
+                _enginesOutVisuals[1].SetActive(false);
+                break;
+            case 2:
+                int randomEngineIndex = UnityEngine.Random.Range(0, _enginesOutVisuals.Length);
+                _enginesOutVisuals[randomEngineIndex].SetActive(false);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void ShieldsUpDamage()
+    {
+        SpriteRenderer shieldSpriteRenderer = _shieldsVisualizer.GetComponent<SpriteRenderer>();
+
+        if (shieldSpriteRenderer == null)
+        {
+            Debug.LogError("Player.shieldColor == NULL");
+        }
+
+        switch (_shieldHitsLeft)
+        {
+            case 2:
+                _shieldHitsLeft = 1;
+                shieldSpriteRenderer.color = new Color(1f, 1f, 1f, .66f);
+                break;
+            case 1:
+                _shieldHitsLeft = 0;
+                shieldSpriteRenderer.color = new Color(1f, 1f, 1f, .33f);
+                break;
+            case 0:
+                _shieldsUp = false;
+                _shieldsVisualizer.SetActive(false);
+                Debug.Log("Sheilds down.");
+                break;
+        }
+    }
+
+    void ShieldsDownDamage()
+    {
         _lives -= 1;
 
         if (_uiScript != null)
@@ -231,7 +316,7 @@ public class Player : MonoBehaviour
 
         Debug.Log("Lives left: " + _lives);
 
-        if (_lives < 1) 
+        if (_lives < 1)
         {
             Death();
         }
@@ -247,31 +332,16 @@ public class Player : MonoBehaviour
 
     void EnginesOutVisual()
     {
-        if (_engine00_Out != true && _engine01_Out != true)
-        {
-            _engineOutIndex = UnityEngine.Random.Range(0, 2);
-        } 
-        else if (_engine01_Out == true)
-        {
-            _engineOutIndex = 0;
-        }
-        else if (_engine00_Out == true)
-        {
-            _engineOutIndex = 1;
-        }
+        int randomEngineOut = UnityEngine.Random.Range(0, _enginesOutVisuals.Length);
 
-        switch (_engineOutIndex)
+        switch (_lives)
         {
-            case 0:
-                _enginesOutVisuals[0].SetActive(true);
-                _engine00_Out = true;
-                break;
             case 1:
+                _enginesOutVisuals[0].SetActive(true);
                 _enginesOutVisuals[1].SetActive(true);
-                _engine01_Out = true;
                 break;
-            default:
-                Debug.Log("Invalid random number");
+            case 2:
+                _enginesOutVisuals[randomEngineOut].SetActive(true);
                 break;
         }
     }

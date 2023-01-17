@@ -3,18 +3,21 @@ using System.Collections;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
-{    
+{
+    [SerializeField] private float _ySpawnPoint;
+    [SerializeField] private float _xEdgeOfScreen = 11;
+
     [SerializeField] private float _minEnemySpawnInterval= .1f;
     [SerializeField] private float _maxEnemySpawnInterval = 5f;
+
+    [SerializeField] private GameObject _enemy;
 
     [SerializeField] private float _minPowerupSpawnInterval = 3f;
     [SerializeField] private float _maxPowerupSpawnInterval = 10f;
 
-    [SerializeField] private float _ySpawnPoint;
-    [SerializeField] private float _xEdgeOfScreen = 11;
-
-    [SerializeField] private GameObject _enemy;
-    [SerializeField] private GameObject[] _powerups;
+    [SerializeField] private GameObject[] _commonPowerups;
+    [SerializeField] private GameObject[] _uncommonPowerups;
+    [SerializeField] private GameObject[] _rarePowerups;
 
     [SerializeField] private Player _playerScript;
     [SerializeField] private GameObject _player;
@@ -34,6 +37,19 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        SetSpawnRandomSpawnPoint();
+    }
+
+    void SetSpawnRandomSpawnPoint()
+    {
+        var playerPosition = _player.transform.position;
+
+        float randomX = UnityEngine.Random.Range(playerPosition.x - _xMaxDistanceFromPlayer, playerPosition.x + _xMaxDistanceFromPlayer);
+
+        transform.position = new Vector3(Mathf.Clamp(randomX, -_xEdgeOfScreen, _xEdgeOfScreen), _ySpawnPoint, 0f);
+    }
     public void StartSpawning()
     {
         StartCoroutine(SpawnEnemiesRoutine());
@@ -53,12 +69,8 @@ public class Spawner : MonoBehaviour
             {
                 break;
             }
-
-            var playerPosition = _player.transform.position;
-            float randomX = UnityEngine.Random.Range(playerPosition.x - _xMaxDistanceFromPlayer, playerPosition.x + _xMaxDistanceFromPlayer);
-            Vector3 randomSpawnPoint = new Vector3(Mathf.Clamp(randomX, -9f, 9f), _ySpawnPoint, 0f);
             
-            GameObject newEnemy = Instantiate(_enemy, randomSpawnPoint, Quaternion.identity);
+            GameObject newEnemy = Instantiate(_enemy, transform.position, Quaternion.identity);
             newEnemy.transform.SetParent(_enemyContainer.transform);
 
         }
@@ -73,12 +85,49 @@ public class Spawner : MonoBehaviour
             float spawnInterval = UnityEngine.Random.Range(_minPowerupSpawnInterval, _maxPowerupSpawnInterval);
             yield return new WaitForSeconds(spawnInterval);
 
-            float xSpawnPoint = UnityEngine.Random.Range(-_xEdgeOfScreen, _xEdgeOfScreen);
-            Vector3 spawnPoint = new Vector3(xSpawnPoint, _ySpawnPoint, 0);
-
-            int randomPowerup = UnityEngine.Random.Range(0, 3);
-            Instantiate(_powerups[randomPowerup], spawnPoint, Quaternion.identity);
+            PickPowerupSpawnRarity();
         }
+    }
+
+    void PickPowerupSpawnRarity()
+    {
+        int randomPercentage = UnityEngine.Random.Range(1, 101);
+
+        switch (randomPercentage)
+        {
+            case int percentageRange when (percentageRange > 30):
+                SpawnCommonPowerup();
+                break;
+            case int percentageRange when (percentageRange <= 30 && percentageRange > 10):
+                SpawnUncommonPowerup();
+                break;
+            case int percentageRange when (percentageRange < 10):
+                SpawnRarePowerup();
+                break;
+            default:
+                SpawnCommonPowerup();
+                break;
+        }
+    }
+    void SpawnCommonPowerup()
+    {
+        int randomPowerup = UnityEngine.Random.Range(0, _commonPowerups.Length);
+
+        Instantiate(_commonPowerups[randomPowerup], transform.position, Quaternion.identity);
+    }
+
+    void SpawnUncommonPowerup()
+    {
+        int randomPowerup = UnityEngine.Random.Range(0, _uncommonPowerups.Length);
+
+        Instantiate(_uncommonPowerups[randomPowerup], transform.position, Quaternion.identity);
+    }
+
+    void SpawnRarePowerup()
+    {
+        int randomPowerup = UnityEngine.Random.Range(0, _rarePowerups.Length);
+
+        Instantiate(_rarePowerups[randomPowerup], transform.position, Quaternion.identity);
     }
 
     public void onPlayerDeath()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Laser : MonoBehaviour
@@ -9,7 +10,11 @@ public class Laser : MonoBehaviour
     [SerializeField] private AudioClip _laserSound;
     [SerializeField] private float _timeUntilOffScreen = 1.5f;
 
-    [SerializeField] private bool _isEnemyLaser = false;
+    [SerializeField] private bool _isEnemyLaser;
+    
+    [SerializeField] private bool _explodingLaser;
+    [SerializeField] private float _explosionTimer;
+    [SerializeField] private float _explosionLaserSlowDownMultiplier;
 
     void Start()
     {
@@ -25,14 +30,49 @@ public class Laser : MonoBehaviour
         Destroy(gameObject, _timeUntilOffScreen);
     }
 
+    void Update()
+    {
+        LaserMovement();
+
+        if (_explodingLaser)
+        {
+            ExplodingLaser();
+        }
+    }
+
+    void LaserExplosionCountdown()
+    {
+        _explosionTimer -= Time.deltaTime;
+    }
+
+    void ExplodingLaser()
+    {
+        LaserExplosionCountdown();
+
+        if (_speed > 0)
+        {
+            _speed -= Time.deltaTime * _explosionLaserSlowDownMultiplier;
+        }
+
+        if (_explosionTimer <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
     public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
     }
 
-    void Update()
+    public void ActivateExplodingLaser()
     {
-        LaserMovement();
+        _explodingLaser = true;
+    }
+
+    public void DeactivateExplodingLaser()
+    {
+        _explodingLaser = false;
     }
 
     void OnTriggerEnter2D(Collider2D other)

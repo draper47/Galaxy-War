@@ -14,7 +14,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _gameOverText;
     [SerializeField] private GameObject _gameManager;
     private GameManager _gameManagerScript;
-    [SerializeField] private float _gameOverFlickerInterval = 1f;
+
+    private float _flickerTimer;
+    [SerializeField] private float _flickerInterval = 1f;
+
+    private Slider _thrusterHeatBuildupSlider;
+    [SerializeField] private GameObject _thrusterHeatBuildupBar;
+    [SerializeField] private GameObject _thrusterSilderFill;
+
+    
 
     void Start()
     {
@@ -31,6 +39,25 @@ public class UIManager : MonoBehaviour
         }
 
         _imageForLives = GameObject.Find("Lives_Display_image").GetComponent<Image>();
+
+        _thrusterHeatBuildupSlider = _thrusterHeatBuildupBar.GetComponent<Slider>();
+
+        if (_thrusterHeatBuildupSlider == null)
+        {
+            Debug.LogError("UIManager._thrusterHeatBuildupSlider == NULL");
+        }
+
+   
+    }
+
+    void Update()
+    {
+        _flickerTimer += Time.deltaTime;
+
+        if (_flickerTimer > _flickerInterval)
+        {
+            _flickerTimer = 0;
+        }
     }
 
     public void UpdateScore(int playerScore)
@@ -43,13 +70,50 @@ public class UIManager : MonoBehaviour
         _imageForLives.sprite = _livesSprites[livesLeft];
     }
 
-    public void UpdateBoostBar(float boostPercentage)
+    public void UpdateThrusterHeatBuildupBar(float heatBuildupPercentage, bool coolingDownThruster)
     {
-        Slider boostBarSliderValue = GameObject.Find("BoostBar").GetComponent<Slider>();
-        
-        if (boostBarSliderValue != null)
+        Image fillColor = _thrusterSilderFill.GetComponent<Image>();
+
+        if (_thrusterHeatBuildupSlider != null)
         {
-            boostBarSliderValue.value = boostPercentage;
+            _thrusterHeatBuildupSlider.value = heatBuildupPercentage;
+
+            //redOverlayFill.color = new Color(1f, .5f, 0, _thrusterHeatBuildupSlider.value - .1f);
+
+            fillColor.color = new Color(1f, Mathf.Clamp(1f - heatBuildupPercentage, .5f, 1f), Mathf.Clamp(1f - heatBuildupPercentage, .3f, 1f));
+        }
+        
+        if (coolingDownThruster)
+        {
+            FlashingRedHeatBuildupBar();
+        }
+    }
+
+    private void FlashingRedHeatBuildupBar()
+    {
+        Image fillColor = _thrusterSilderFill.GetComponent<Image>();
+
+        switch (_flickerTimer)
+        {
+            case float redOverlayFlickerOnRange when (redOverlayFlickerOnRange < _flickerInterval / 2):
+                fillColor.color = new Color(1f, 1f, 1f);
+                break;
+            case float redOverlayFlickerOnRange when (redOverlayFlickerOnRange > _flickerInterval / 2):
+                fillColor.color = new Color(1f, .5f, .3f);
+                break;
+            default:
+                fillColor.color = new Color(1f, 1f, 1f);
+                break;
+        }
+    }
+
+    public void UpdateAmmoClipUI(int shotsLeft)
+    {
+        Slider ammoClipSlider = GameObject.Find("AmmoClip").GetComponent<Slider>();
+
+        if (ammoClipSlider != null)
+        {
+            ammoClipSlider.value = shotsLeft;
         }
     }
 
@@ -60,10 +124,10 @@ public class UIManager : MonoBehaviour
         while (true)
         {
             _gameOverText.SetActive(true);
-            yield return new WaitForSeconds(_gameOverFlickerInterval);
+            yield return new WaitForSeconds(_flickerInterval);
             
             _gameOverText.SetActive(false);
-            yield return new WaitForSeconds(_gameOverFlickerInterval);
+            yield return new WaitForSeconds(_flickerInterval);
         }
     }
 

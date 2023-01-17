@@ -53,13 +53,24 @@ public class PowerUp : MonoBehaviour
             switch (_powerupID)
             {
                 case 0:
-                    _playerScript.StartCoroutine("ActivateTrippleShot");
+                    _playerScript.RefillAmmo();
+                    _playerScript.ActivateTrippleShot();
                     break;
                 case 1:
                     _playerScript.StartCoroutine("ActivateSpeedBoost");
                     break;
                 case 2:
                     _playerScript.ActivateShield();
+                    break;
+                case 3:
+                    _playerScript.Repair();
+                    break;
+                case 4:
+                    _playerScript.RefillAmmo();
+                    break;
+                case 5:
+                    _playerScript.RefillAmmo();
+                    _playerScript.ActivateExplodingLaser();
                     break;
                 default:
                     Debug.Log("Invalid _powerupID value");
